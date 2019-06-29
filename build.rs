@@ -25,6 +25,9 @@ fn main() {
 
     println!("cargo:rustc-link-search={}", build.out_dir);
     println!("cargo:rustc-link-lib=static=ipasir");
+
+    println!("cargo:rustc-link-search=/usr/local/lib");
+    println!("cargo:rustc-link-lib=static=stdc++");
 }
 
 struct Build {
