@@ -1,3 +1,4 @@
+use bindgen::Builder;
 use copy_dir::copy_dir;
 
 use std::env;
@@ -7,6 +8,8 @@ use std::process::Command;
 
 fn main() {
     let build = Build::new();
+
+    build.generate_bindings();
 
     if let Ok(ipasir) = env::var("IPASIR") {
         build.copy_existing_library(ipasir);
@@ -37,6 +40,12 @@ struct Build {
 impl Build {
     fn new() -> Self {
         Self { out_dir: env::var("OUT_DIR").unwrap() }
+    }
+
+    fn generate_bindings(&self) {
+        Builder::default()
+            .header("vendor/ipasir/ipasir.h").generate().unwrap()
+            .write_to_file(format!("{}/bindings.rs", self.out_dir)).unwrap();
     }
 
     fn static_library_exists(&self) -> bool {
