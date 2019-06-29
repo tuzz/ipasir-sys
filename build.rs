@@ -8,6 +8,10 @@ use std::process::Command;
 fn main() {
     let build = Build::new();
 
+    if let Ok(ipasir) = env::var("IPASIR") {
+        build.copy_existing_library(ipasir);
+    }
+
     if !build.static_library_exists() {
         build.remove_cadical_dir();
         build.copy_cadical_dir();
@@ -15,7 +19,7 @@ fn main() {
         build.configure_cadical();
         build.make_cadical();
 
-        build.copy_static_library();
+        build.copy_cadical_library();
         build.remove_cadical_dir();
     }
 
@@ -56,10 +60,14 @@ impl Build {
             .spawn().unwrap().wait().unwrap();
     }
 
-    fn copy_static_library(&self) {
+    fn copy_cadical_library(&self) {
         copy(
             format!("{}/cadical/build/libcadical.a", self.out_dir),
             format!("{}/libipasir.a", self.out_dir)
         ).unwrap();
+    }
+
+    fn copy_existing_library(&self, ipasir: String) {
+        copy(ipasir, format!("{}/libipasir.a", self.out_dir)).unwrap();
     }
 }
