@@ -1,0 +1,12 @@
+language: rust
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-9
+sudo: required
+script:
+  - sudo ln -s /usr/bin/g++-9 /usr/local/bin/g++
+  - sudo ln -s /usr/lib/gcc/x86_64-linux-gnu/9/libstdc++.a /usr/local/lib/
+  - cargo test
