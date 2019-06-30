@@ -12,6 +12,7 @@ description = "A Rust crate that contains FFI bindings for IPASIR-compatible SAT
 keywords = ["ipasir", "ffi", "incremental", "sat", "satisfiability"]
 categories = ["external-ffi-bindings", "science"]
 travis-ci = "tuzz/ipasir-sys"
+exclude = ["vendor/cadical/src/makefile"]
 
 [build-dependencies]
 bindgen = "0.49.3"
