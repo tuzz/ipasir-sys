@@ -1,5 +1,10 @@
 ## ipasir-sys
 
+[![Build Status](https://travis-ci.org/tuzz/ipasir-sys.svg?branch=master)](https://travis-ci.org/tuzz/ipasir-sys)
+[![Latest version](https://img.shields.io/crates/v/ipasir-sys.svg)](https://crates.io/crates/ipasir-sys)
+[![Rust Version](https://img.shields.io/badge/rust-2018%20edition-yellow.svg)](https://rust-lang-nursery.github.io/edition-guide/editions/index.html)
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/tuzz/ipasir-sys/blob/master/LICENSE)
+
 A Rust crate that contains FFI bindings for IPASIR-compatible SAT solvers.
 
 This crate exposes the
