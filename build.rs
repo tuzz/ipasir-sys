@@ -62,6 +62,7 @@ impl Build {
 
     fn configure_cadical(&self) {
         Command::new("./configure")
+            .arg("-fPIC")
             .env("CXX", "/usr/local/bin/g++")
             .current_dir(format!("{}/cadical", self.out_dir))
             .spawn().unwrap().wait().unwrap();
