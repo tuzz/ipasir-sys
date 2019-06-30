@@ -1,6 +1,6 @@
 [submodule "vendor/cadical"]
 	path = vendor/cadical
-	url = https://github.com/arminbiere/cadical.git
+	url = https://github.com/tuzz/cadical.git
 [submodule "vendor/ipasir"]
 	path = vendor/ipasir
 	url = https://github.com/biotomas/ipasir.git
