@@ -1,6 +1,6 @@
 [package]
 name = "ipasir-sys"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Chris Patuzzo <chris@patuzzo.co.uk>"]
 edition = "2018"
 license = "MIT"
