@@ -10,7 +10,7 @@ mod ipasir_signature {
         let c_string = unsafe { CStr::from_ptr(c_buffer) };
         let signature = c_string.to_str().unwrap();
 
-        assert_eq!(signature, "cadical-1.0.2");
+        assert_eq!(signature, "cadical-1.0.3");
     }
 }
 
