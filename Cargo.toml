@@ -15,5 +15,5 @@ travis-ci = "tuzz/ipasir-sys"
 exclude = ["vendor/cadical/src/makefile"]
 
 [build-dependencies]
-bindgen = "0.49.3"
+bindgen = "0.51.0"
 copy_dir = "0.1.2"
