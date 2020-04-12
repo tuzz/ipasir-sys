@@ -2,7 +2,7 @@ use bindgen::Builder;
 use copy_dir::copy_dir;
 
 use std::env;
-use std::fs::{copy, remove_dir_all};
+use std::fs::{copy, remove_dir_all, remove_file};
 use std::path::Path;
 use std::process::Command;
 
@@ -48,8 +48,12 @@ impl Build {
             .write_to_file(format!("{}/bindings.rs", self.out_dir)).unwrap();
     }
 
+    fn ipasir_out(&self) -> String {
+        format!("{}/libipasir.a", self.out_dir)
+    }
+
     fn static_library_exists(&self) -> bool {
-        Path::new(&format!("{}/libipasir.a", self.out_dir)).exists()
+        Path::new(&self.ipasir_out()).exists()
     }
 
     fn remove_cadical_dir(&self) {
@@ -75,13 +79,19 @@ impl Build {
     }
 
     fn copy_cadical_library(&self) {
+        if self.static_library_exists() {
+            remove_file(self.ipasir_out()).unwrap();
+        }
         copy(
             format!("{}/cadical/build/libcadical.a", self.out_dir),
-            format!("{}/libipasir.a", self.out_dir)
+            self.ipasir_out(),
         ).unwrap();
     }
 
     fn copy_existing_library(&self, ipasir: String) {
-        copy(ipasir, format!("{}/libipasir.a", self.out_dir)).unwrap();
+        if self.static_library_exists() {
+            remove_file(self.ipasir_out()).unwrap();
+        }
+        copy(ipasir, self.ipasir_out()).unwrap();
     }
 }
