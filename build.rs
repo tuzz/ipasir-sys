@@ -26,11 +26,8 @@ fn main() {
         build.remove_cadical_dir();
     }
 
-    println!("cargo:rustc-link-search={}", build.out_dir);
-    println!("cargo:rustc-link-lib=static=ipasir");
-
-    println!("cargo:rustc-link-search=/usr/local/lib");
-    println!("cargo:rustc-link-lib=static=stdc++");
+    build.static_link_to_ipasir();
+    build.dynamic_link_to_cpp_stdlib();
 }
 
 struct Build {
@@ -45,11 +42,7 @@ impl Build {
     fn generate_bindings(&self) {
         Builder::default()
             .header("vendor/ipasir/ipasir.h").generate().unwrap()
-            .write_to_file(format!("{}/bindings.rs", self.out_dir)).unwrap();
-    }
-
-    fn ipasir_out(&self) -> String {
-        format!("{}/libipasir.a", self.out_dir)
+            .write_to_file(self.path("bindings.rs")).unwrap();
     }
 
     fn static_library_exists(&self) -> bool {
@@ -57,24 +50,23 @@ impl Build {
     }
 
     fn remove_cadical_dir(&self) {
-        let _ = remove_dir_all(format!("{}/cadical", self.out_dir));
+        let _ = remove_dir_all(self.path("cadical"));
     }
 
     fn copy_cadical_dir(&self) {
-        copy_dir("vendor/cadical", format!("{}/cadical", self.out_dir)).unwrap();
+        copy_dir("vendor/cadical", self.path("cadical")).unwrap();
     }
 
     fn configure_cadical(&self) {
-        Command::new("./configure")
+        Command::new(self.path("cadical/configure"))
             .arg("-fPIC")
-            .env("CXX", "/usr/local/bin/g++")
-            .current_dir(format!("{}/cadical", self.out_dir))
+            .current_dir(self.path("cadical"))
             .spawn().unwrap().wait().unwrap();
     }
 
     fn make_cadical(&self) {
         Command::new("make")
-            .current_dir(format!("{}/cadical/build", self.out_dir))
+            .current_dir(self.path("cadical/build"))
             .spawn().unwrap().wait().unwrap();
     }
 
@@ -83,7 +75,7 @@ impl Build {
             remove_file(self.ipasir_out()).unwrap();
         }
         copy(
-            format!("{}/cadical/build/libcadical.a", self.out_dir),
+            self.path("cadical/build/libcadical.a"),
             self.ipasir_out(),
         ).unwrap();
     }
@@ -93,5 +85,38 @@ impl Build {
             remove_file(self.ipasir_out()).unwrap();
         }
         copy(ipasir, self.ipasir_out()).unwrap();
+    }
+
+    fn static_link_to_ipasir(&self) {
+        println!("cargo:rustc-link-search={}", self.out_dir);
+        println!("cargo:rustc-link-lib=static=ipasir");
+    }
+
+    // The C++ standard library name varies by platform.
+    // Based on: https://docs.rs/cc/1.0.57/src/cc/lib.rs.html#2178
+    fn dynamic_link_to_cpp_stdlib(&self) {
+        let target = env::var("TARGET").unwrap();
+
+        let name = if target.contains("msvc") {
+            return;
+        } else if target.contains("apple") {
+            "c++"
+        } else if target.contains("freebsd") {
+            "c++"
+        } else if target.contains("openbsd") {
+            "c++"
+        } else {
+            "stdc++"
+        };
+
+        println!("cargo:rustc-link-lib=dylib={}", name);
+    }
+
+    fn ipasir_out(&self) -> String {
+        self.path("libipasir.a")
+    }
+
+    fn path(&self, p: &'static str) -> String {
+        format!("{}/{}", self.out_dir, p)
     }
 }

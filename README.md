@@ -72,50 +72,23 @@ $ IPASIR=/path/to/libsolver.a cargo build
 
 The crate will copy the library to its build directory and try to link against
 it. You must use an absolute path but the library's name does not matter. If
-your library has other dependencies, you can either pass additional flags to
-cargo or inline them into your static library.
+your library has other dependencies it is recommended you inline them into your
+static library. Alternatively, you can try to pass additional link flags to
+cargo.
 
-## Using the default solver
+## Using Cadical
 
 If the `IPASIR` environment variable is not set, the crate will try to compile a
-version of Cadical which is vendored as part of the crate. This compilation
-depends on a relatively modern version of C++ and could fail if its standard
-library cannot be found (libstdc++). At time of writing, the
-[clang](https://clang.llvm.org/) version that ships with MacOS fails to compile
-Cadical.
+version of Cadical that is vendored as part of the crate. If this doesn't work,
+please try cloning this crate from GitHub and running `cargo test` on its own.
+It may also be helpful to refer to the [Travis CI](https://travis-ci.org/tuzz/ipasir-sys)
+build and [its configuration](.travis.yml).
 
-To fix this, there are two _escape hatches_ that can be used to aid compilation:
-
-1. You can explicitly tell it which compiler to use by symlinking it to `/usr/local/bin/g++`
-2. You can ensure libstdc++ is discoverable by symlinking it to `/usr/local/lib/libstdc++.a`
-
-You may also find the crate compiles but fails at runtime due to missing
-linker symbols. This is likely the same problem and you should try re-compiling,
-following the instructions above. It may be helpful to clone this crate and
-build it on its own with `cargo test` or refer to the
-[Travis CI](https://travis-ci.org/tuzz/ipasir-sys) build and
-[its configuration](.travis.yml).
-
-## Compiling on MacOS
-
-The [GNU Compiler Collection](https://gcc.gnu.org/) is able to compile Cadical
-on MacOS. Based on the section above, here's how to fix it:
-
-```sh
-$ brew install gcc
-
-$ ln -s /usr/local/Cellar/gcc/*/lib/gcc/*/libstdc++.a /usr/local/lib/
-$ ln -s /usr/local/Cellar/gcc/*/bin/g++-* /usr/local/bin/g++
-
-$ cargo build
-```
-
-If this still fails, or if you're unable to compile the crate on linux, please
-[open an issue](https://github.com/tuzz/ipasir-sys/issues/new).
+If you can't get it work, please [open an issue](https://github.com/tuzz/ipasir-sys/issues/new).
 
 ## Ideas for improvement
 
-- Vendor more solvers and switch between them with a [crate feature](https://doc.rust-lang.org/cargo/reference/manifest.html#the-features-section)
+- Vendor more solvers and switch between them easily
 - Improve operating system support (e.g. Windows)
 - Add automated tests against different solvers and platforms
 
